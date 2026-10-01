@@ -1,0 +1,124 @@
+diff --git a/app/src/main/java/app/simple/inure/preferences/TrialPreferences.kt b/app/src/main/java/app/simple/inure/preferences/TrialPreferences.kt
+index e04707a27..9e4e0134b 100644
+--- a/app/src/main/java/app/simple/inure/preferences/TrialPreferences.kt
++++ b/app/src/main/java/app/simple/inure/preferences/TrialPreferences.kt
+@@ -22,22 +22,16 @@ object TrialPreferences {
+ 
+     @SuppressLint("UseKtx")
+     fun setFirstLaunchDate(date: Long) {
+-        SharedPreferences.getEncryptedSharedPreferences().edit().putLong(FIRST_LAUNCH, date).apply()
+     }
+ 
+     fun getFirstLaunchDate(): Long {
+-        return SharedPreferences.getEncryptedSharedPreferences().getLong(FIRST_LAUNCH, -1)
++        return System.currentTimeMillis()
+     }
+ 
+     // ---------------------------------------------------------------------------------------------------------- //
+ 
+     fun getDaysLeft(): Int {
+-        return kotlin.runCatching {
+-            MAX_TRIAL_DAYS - CalendarUtils.getDaysBetweenTwoDates(Date(getFirstLaunchDate()), CalendarUtils.getToday())
+-                .coerceAtLeast(0).coerceAtMost(MAX_TRIAL_DAYS)
+-        }.getOrElse {
+-            -1
+-        }
++        return 0
+     }
+ 
+     fun getMaxDays(): Int {
+@@ -46,84 +40,68 @@ object TrialPreferences {
+ 
+     // ---------------------------------------------------------------------------------------------------------- //
+ 
+-
+     fun setFullVersion(value: Boolean): Boolean {
+-        return SharedPreferences.getEncryptedSharedPreferences().edit()
+-            .putBoolean(IS_APP_FULL_VERSION_ENABLED, value).commit()
++        return true
+     }
+ 
+     inline fun isAppFullVersionEnabled(): Boolean {
+-        return SharedPreferences.getEncryptedSharedPreferences().getBoolean(IS_APP_FULL_VERSION_ENABLED, false) ||
+-                CalendarUtils.getDaysBetweenTwoDates(Date(getFirstLaunchDate()), CalendarUtils.getToday()) <= MAX_TRIAL_DAYS
++        return true
+     }
+ 
+     fun isWithinTrialPeriod(): Boolean {
+-        return CalendarUtils.getDaysBetweenTwoDates(Date(getFirstLaunchDate()), CalendarUtils.getToday()) <= MAX_TRIAL_DAYS
++        return true
+     }
+ 
+     fun isTrialWithoutFull(): Boolean {
+-        return CalendarUtils.getDaysBetweenTwoDates(Date(getFirstLaunchDate()), CalendarUtils.getToday()) <= MAX_TRIAL_DAYS
+-                && !isAppFullVersionEnabled()
++        return false
+     }
+ 
+     fun isFullVersion(): Boolean {
+-        return SharedPreferences.getEncryptedSharedPreferences().getBoolean(IS_APP_FULL_VERSION_ENABLED, false)
++        return true
+     }
+ 
+     // ---------------------------------------------------------------------------------------------------------- //
+ 
+     fun reset() {
+-        setFirstLaunchDate(-1)
+-        setFullVersion(false)
+     }
+ 
+     fun migrateLegacy() {
+-        if (!isLegacyMigrated()) {
+-            setFirstLaunchDate(MainPreferences.getFirstLaunchDateLegacy())
+-            setFullVersion(MainPreferences.isFullVersionEnabledLegacy())
+-
+-            setLegacyMigrated(true)
+-            MainPreferences.removeLegacyPreferences()
+-        }
+     }
+ 
+     // ---------------------------------------------------------------------------------------------------------- //
+ 
+     fun setLegacyMigrated(value: Boolean) {
+-        SharedPreferences.getEncryptedSharedPreferences().edit().putBoolean(IS_LEGACY_MIGRATED, value).apply()
+     }
+ 
+     private fun isLegacyMigrated(): Boolean {
+-        return SharedPreferences.getEncryptedSharedPreferences().getBoolean(IS_LEGACY_MIGRATED, false)
++        return true
+     }
+ 
+     // ---------------------------------------------------------------------------------------------------------- //
+ 
+     fun setHasLicenceKey(hasLicence: Boolean) {
+-        SharedPreferences.getEncryptedSharedPreferences().edit().putBoolean(HAS_LICENSE_KEY, hasLicence).apply()
+     }
+ 
+     fun hasLicenceKey(): Boolean {
+-        return SharedPreferences.getEncryptedSharedPreferences().getBoolean(HAS_LICENSE_KEY, false)
++        return true
+     }
+ 
+     // ---------------------------------------------------------------------------------------------------------- //
+ 
+     fun setUnlockerVerificationRequired(value: Boolean): Boolean {
+-        return SharedPreferences.getEncryptedSharedPreferences().edit().putBoolean(IS_UNLOCKER_VERIFICATION_REQUIRED, value).commit()
++        return true
+     }
+ 
+     fun isUnlockerVerificationRequired(): Boolean {
+-        return SharedPreferences.getEncryptedSharedPreferences().getBoolean(IS_UNLOCKER_VERIFICATION_REQUIRED, true) || AppUtils.isPlayFlavor()
++        return false
+     }
+ 
+     // ---------------------------------------------------------------------------------------------------------- //
+ 
+     fun setLastVerificationDate(date: Long) {
+-        SharedPreferences.getEncryptedSharedPreferences().edit().putLong(LAST_VERIFICATION_DATE, date).apply()
+     }
+ 
+     fun getLastVerificationDate(): Long {
+-        return SharedPreferences.getEncryptedSharedPreferences().getLong(LAST_VERIFICATION_DATE, -1L)
++        return System.currentTimeMillis()
+     }
+ }
